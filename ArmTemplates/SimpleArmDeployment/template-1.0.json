@@ -1,0 +1,180 @@
+{
+    //this template will be deployed at the subscription level using the command:
+    //az deployment sub create --location canadacentral --template-file template-1.0.json --parameters parameters.json
+
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.1",
+
+    //declare parameters globally (define their values in the parameters.json)
+    "parameters": {
+        //resource group name
+        "rgName": {
+            "type": "string" 
+        },
+
+        //resource group location
+        "rgLocation": {
+            "type": "string" 
+        },
+
+        //tags for billing etc.
+        "tags": {
+            "type": "object",
+            "defaultValue": {} 
+        },
+
+        //network security group name
+        "nsgName": {
+            "type": "string"
+        },
+
+        //location of the resources created in this deployment
+        "location": {
+            "type": "string"
+        },
+
+        "vNetName": {
+            "type": "string"
+        },
+        "vNetExtendedLocation": {
+            "type": "object"
+        },
+        "vNetDdosProtectionPlanEnabled": {
+            "type": "bool"
+        }
+    },
+
+    //declare any variables
+    "variables": {},
+    
+    //resources to be created in Azure
+    "resources": [
+
+        //create a brand-new resource group
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "[parameters('rgLocation')]",
+            "name": "[parameters('rgName')]",
+            "properties": {},
+            "tags": "[parameters('tags')]"
+        },
+
+        //create a resource of type 'deployment'. All the resources to be created will be defined as nested templates below within this template.
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name":"bookAppDeployment", //a custom name for deployment
+            "resourceGroup":"[parameters('rgName')]", //the name of the resource group created above.
+            "tags": "[parameters('tags')]",  
+            "dependsOn":[
+                "[resourceId('Microsoft.Resources/resourceGroups', parameters('rgName'))]" //Tells the Azure that all the resources depend on the particular resource group, so proceed only if the resource group exists  
+            ],
+
+            "properties":{
+                "mode": "Incremental", //instructs Azure to keep the existing resources from previous deployment intact but apply the changes in this template incrementally.  This is applicable to resources only.  Properties are always reevaluated. 
+                "expressionEvaluationOptions": {
+                    "scope": "Inner" //scope of the parameters
+                },
+
+                //Set parameters locally scoped to this nested deployment template.  The values are retrieved from the globally scoped parameters above so that they can be organized within parameters.json 
+                "parameters": {
+                   "location": {
+                       "value": "[parameters('location')]"
+                   },
+                   "tags": {
+                       "value": "[parameters('tags')]"
+                   },
+                   "nsgName": {
+                       "value": "[parameters('nsgName')]"
+                   },
+                   "vNetName": {
+                       "value": "[parameters('vNetName')]" 
+                   },
+                   "vNetExtendedLocation": {
+                        "value": "[parameters('vNetExtendedLocation')]"
+                    },
+                    "vNetDdosProtectionPlanEnabled": {
+                        "value": "[parameters('vNetDdosProtectionPlanEnabled')]"
+                    }    
+                },
+
+ 
+                //define the template for the deployment 'bookAppDeployment'
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+
+                    //define parameters to be used
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "tags": {
+                            "type": "object",
+                            "defaultValue": {}
+                        },
+                        "nsgName": {
+                            "type": "string"
+                        },
+                        "vNetName": {
+                            "type": "string"
+                        },
+                        "vNetExtendedLocation": {
+                            "type": "object"
+                        },
+                        "vNetDdosProtectionPlanEnabled": {
+                            "type": "bool"
+                        }                       
+                    },
+
+                    //Define resources to be created
+                    "resources": [
+                        
+                        //Create network security group
+                        {
+                            "type":"Microsoft.Network/networkSecurityGroups",
+                            "apiVersion": "2019-02-01",
+                            "name":"[parameters('nsgName')]",
+                            "location": "[parameters('location')]",
+                            "tags":"[parameters('tags')]",
+                            "properties": {}
+                        },
+
+                        //create a virtual network
+                        {
+                            "name": "[parameters('vNetName')]",
+                            "type": "Microsoft.Network/VirtualNetworks",
+                            "apiVersion": "2021-01-01",
+                            "location": "[parameters('location')]",
+                            "extendedLocation": "[if(empty(parameters('vNetExtendedLocation')), json('null'), parameters('vNetExtendedLocation'))]",
+                            "dependsOn": [],
+                            "tags": {
+                                "app-name": "bookapp"
+                            },
+                            "properties": {
+                                "addressSpace": {
+                                    "addressPrefixes": [
+                                        "10.0.0.0/24"
+                                    ]
+                                },
+                                "subnets": [
+                                    {
+                                        "name": "subnet-bookapp-dev",
+                                        "properties": {
+                                            "addressPrefix": "10.0.0.0/24"
+                                        }
+                                    }
+                                ],
+                                "enableDdosProtection": "[parameters('vNetDdosProtectionPlanEnabled')]"
+                            }
+                        }
+
+                    ]
+                }
+            }
+            
+        }   
+    ],
+    "outputs": {}
+}

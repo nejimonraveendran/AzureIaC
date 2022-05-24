@@ -1,0 +1,11 @@
+﻿#use managed identity if this script is executed from an Azure VM.  Managed identities are more secure and non-interactive than using credentials.
+#Connect-AzAccount -Identity
+
+$Credential = Get-Credential
+Connect-AzAccount -Credential $Credential
+
+New-AzDeployment -Location "CanadaCentral" -TemplateFile "$PSScriptRoot\ResourceGroup\template-1.0.json" -TemplateParameterFile "$PSScriptRoot\ResourceGroup\parameters.json"
+
+or
+
+az deployment sub create --location canadacentral --template-file template-1.0.json --parameters parameters.json

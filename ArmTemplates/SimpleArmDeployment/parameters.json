@@ -1,0 +1,38 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rgName": {
+            "value": "rg-myrealm-bookapp-dev"
+        },
+        "rgLocation": {
+            "value": "canadacentral"
+        },
+        "tags": {
+            "value": {
+                "app-name": "bookapp",
+                "env": "dev",
+                "org": "myrealm"
+            }
+        },
+        "location": {
+            "value": "canadacentral"
+        },
+
+
+        "nsgName": {
+            "value": "nsg-myrealm-bookapp-dev" 
+        },
+
+        "vNetName": {
+            "value": "vnet-myrealm-bookapp-dev"
+        },
+        "vNetDdosProtectionPlanEnabled": {
+            "value": false
+        },
+        "vNetExtendedLocation": {
+            "value": {}
+        }
+
+    }
+}
