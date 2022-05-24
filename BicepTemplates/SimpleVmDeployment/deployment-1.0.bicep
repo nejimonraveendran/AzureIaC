@@ -1,3 +1,10 @@
+//prerequisite:
+//install powershell if not already done: https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.2
+//install azure cli: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
+//install bicep extension: az bicep install
+//upgrade bicep: az bicep upgrade
+//install bicep VS code extension
+
 //use the following command to deploy this template
 //az deployment sub create --location canadacentral --template-file deployment-1.0.bicep --parameters loc=canadacentral env=dev
 //or
