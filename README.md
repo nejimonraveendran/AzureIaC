@@ -1,7 +1,7 @@
 # AzureIaC
 This repo is for storing Azure Infrastructure as Code files
 
-### SimpleVmDeployment
+### BicepTemplates/SimpleVmDeployment
 This template demos creation of:
 1. reource group
 2. network security group
