@@ -5,8 +5,6 @@ param vmSize string = 'Standard_D2s_v3'
 param osDiskType string = 'Premium_LRS'
 param nicId string
 param adminUsername string
-
-@secure()
 param adminPassword string
 
 resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
