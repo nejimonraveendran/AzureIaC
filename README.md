@@ -9,3 +9,7 @@ This template demos creation of:
 4. public ip
 5. network interface card
 6. virtual machine
+
+### BicepTemplates/TemplateCollection
+A bunch of reusable bicep module templates
+
