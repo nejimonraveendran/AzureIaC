@@ -1,4 +1,4 @@
-# AzureIaC
+# Azure Infrastructure as Code using ARM and Biceps
 This repo is for storing Azure Infrastructure as Code files
 
 ### BicepTemplates/SimpleVmDeployment
